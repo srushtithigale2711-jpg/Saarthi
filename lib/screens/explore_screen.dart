@@ -11,31 +11,37 @@ class ExploreScreen extends StatelessWidget {
         'name': 'Goa',
         'subtitle': 'Beaches • Nightlife • Adventure',
         'icon': Icons.beach_access,
+        'image': 'assets/images/goa.jpg',
       },
       {
         'name': 'Jaipur',
         'subtitle': 'Forts • Culture • Heritage',
         'icon': Icons.account_balance,
+        'image': 'assets/images/jaipur.jpg',
       },
       {
         'name': 'Kerala',
         'subtitle': 'Backwaters • Nature • Wellness',
         'icon': Icons.nature,
+        'image': 'assets/images/kerala.jpg',
       },
       {
         'name': 'Manali',
         'subtitle': 'Mountains • Snow • Adventure',
         'icon': Icons.terrain,
+        'image': 'assets/images/manali.jpg',
       },
       {
         'name': 'Mumbai',
         'subtitle': 'City • Food • Entertainment',
         'icon': Icons.location_city,
+        'image': 'assets/images/mumbai.jpg',
       },
       {
         'name': 'Delhi',
         'subtitle': 'History • Culture • Food',
         'icon': Icons.museum,
+        'image': 'assets/images/delhi.jpg',
       },
     ];
 
@@ -111,6 +117,7 @@ class ExploreScreen extends StatelessWidget {
 
             const SizedBox(height: 15),
 
+            // Destination cards
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -118,8 +125,8 @@ class ExploreScreen extends StatelessWidget {
                   const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.95,
+                mainAxisSpacing: 14,
+                childAspectRatio: 0.82,
               ),
               itemCount: destinations.length,
               itemBuilder: (context, index) {
@@ -128,8 +135,6 @@ class ExploreScreen extends StatelessWidget {
                 return InkWell(
                   borderRadius: BorderRadius.circular(18),
 
-                  // STEP 10.2:
-                  // Save destination when the card is tapped.
                   onTap: () {
                     SavedPlaces.addPlace(
                       name: destination['name'],
@@ -148,54 +153,127 @@ class ExploreScreen extends StatelessWidget {
                   },
 
                   child: Container(
-                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
+                          color: Colors.black.withValues(alpha: 0.06),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
                       ],
                     ),
+
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: 58,
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE3F2FD),
-                            borderRadius: BorderRadius.circular(16),
+                        // Destination image
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(18),
+                            topRight: Radius.circular(18),
                           ),
-                          child: Icon(
-                            destination['icon'],
-                            size: 32,
-                            color: const Color(0xFF1565C0),
+                          child: Image.asset(
+                            destination['image'],
+                            width: double.infinity,
+                            height: 115,
+                            fit: BoxFit.cover,
+
+                            // Fallback if image has a problem
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 115,
+                                color: const Color(0xFFE3F2FD),
+                                child: Center(
+                                  child: Icon(
+                                    destination['icon'],
+                                    size: 38,
+                                    color: const Color(0xFF1565C0),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
 
-                        const SizedBox(height: 12),
+                        // Card information
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              12,
+                              10,
+                              12,
+                              10,
+                            ),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  destination['name'],
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF123B65),
+                                  ),
+                                ),
 
-                        Text(
-                          destination['name'],
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF123B65),
-                          ),
-                        ),
+                                const SizedBox(height: 5),
 
-                        const SizedBox(height: 6),
+                                Expanded(
+                                  child: Text(
+                                    destination['subtitle'],
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
 
-                        Text(
-                          destination['subtitle'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
+                                const SizedBox(height: 5),
+
+                                // Save button
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints:
+                                          const BoxConstraints(),
+                                      icon: const Icon(
+                                        Icons.bookmark_border,
+                                        size: 22,
+                                        color: Color(0xFF1565C0),
+                                      ),
+                                      onPressed: () {
+                                        SavedPlaces.addPlace(
+                                          name: destination['name'],
+                                          subtitle:
+                                              destination['subtitle'],
+                                          icon: destination['icon'],
+                                        );
+
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              '${destination['name']} saved successfully ❤️',
+                                            ),
+                                            behavior:
+                                                SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -268,9 +346,15 @@ class ExploreScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: const Color(0xFF1565C0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text(
                       'Get Recommendations',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

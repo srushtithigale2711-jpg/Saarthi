@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../data/saved_places.dart';
-import 'trip_planner_screen.dart';
 
 class SavedScreen extends StatefulWidget {
-  const SavedScreen({super.key});
+  final VoidCallback? onExploreDestinations;
+
+  const SavedScreen({
+    super.key,
+    this.onExploreDestinations,
+  });
 
   @override
   State<SavedScreen> createState() => _SavedScreenState();
@@ -15,19 +19,8 @@ class _SavedScreenState extends State<SavedScreen> {
   // REMOVE SAVED PLACE
   // ==========================================================
 
-  void removePlace(int index) {
-    final removedPlace = SavedPlaces.places[index]['name'];
-
-    setState(() {
-      SavedPlaces.removePlace(removedPlace);
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$removedPlace removed from saved places.'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  void removePlace(String name) {
+    SavedPlaces.removePlace(name);
   }
 
   // ==========================================================
@@ -35,306 +28,114 @@ class _SavedScreenState extends State<SavedScreen> {
   // ==========================================================
 
   void clearAll() {
-    setState(() {
-      SavedPlaces.places.clear();
-    });
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Clear Saved Places?',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF123B65),
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to remove all saved places?',
+            style: TextStyle(
+              fontSize: 15,
+              color: Color(0xFF607D8B),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text(
+                'CANCEL',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF607D8B),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                SavedPlaces.clearAll();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('All saved places have been removed.'),
-        behavior: SnackBarBehavior.floating,
-      ),
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1565C0),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'CLEAR',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   // ==========================================================
-  // BUILD UI
+  // BUILD
   // ==========================================================
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F9FE),
+    return ValueListenableBuilder<int>(
+      valueListenable: SavedPlaces.version,
+      builder: (context, _, child) {
+        final places = SavedPlaces.places;
 
-      // ========================================================
-      // APP BAR
-      // ========================================================
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
-        foregroundColor: Colors.white,
-        elevation: 0,
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F9FE),
 
-        title: const Row(
-          children: [
-            Icon(Icons.favorite, size: 25),
-            SizedBox(width: 10),
-            Text(
-              'Saved',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+          // ========================================================
+          // APP BAR
+          // ========================================================
 
-        actions: [
-          if (SavedPlaces.places.isNotEmpty)
-            IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Clear Saved Places?'),
-                      content: const Text(
-                        'Are you sure you want to remove all saved destinations?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            clearAll();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('Clear All'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: const Icon(Icons.delete_sweep_outlined),
-            ),
-        ],
-      ),
+          appBar: AppBar(
+            backgroundColor: const Color(0xFF1565C0),
+            foregroundColor: Colors.white,
+            elevation: 0,
 
-      // ========================================================
-      // BODY
-      // ========================================================
-      body: SavedPlaces.places.isEmpty
-          ? _buildEmptyState()
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Your Saved Places ❤️',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF123B65),
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  const Text(
-                    'Keep track of the destinations you want to visit.',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // ==================================================
-                  // SAVED PLACE CARDS
-                  // ==================================================
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-
-                    itemCount: SavedPlaces.places.length,
-
-                    itemBuilder: (context, index) {
-                      final place = SavedPlaces.places[index];
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 14),
-                        padding: const EdgeInsets.all(16),
-
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-
-                        child: Row(
-                          children: [
-                            // Destination Icon
-                            Container(
-                              width: 60,
-                              height: 60,
-
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE3F2FD),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-
-                              child: Icon(
-                                place['icon'],
-                                color: const Color(0xFF1565C0),
-                                size: 32,
-                              ),
-                            ),
-
-                            const SizedBox(width: 15),
-
-                            // Destination Information
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    place['name'],
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF123B65),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 5),
-
-                                  Text(
-                                    place['subtitle'],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 8),
-
-                                  const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.favorite,
-                                        size: 15,
-                                        color: Color(0xFF1565C0),
-                                      ),
-
-                                      SizedBox(width: 5),
-
-                                      Text(
-                                        'Saved destination',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Color(0xFF1565C0),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Delete Button
-                            IconButton(
-                              onPressed: () {
-                                removePlace(index);
-                              },
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // ==================================================
-                  // AI RECOMMENDATION CARD
-                  // ==================================================
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF1565C0), Color(0xFF42A5F5)],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.auto_awesome,
-                              color: Colors.white,
-                              size: 27,
-                            ),
-
-                            SizedBox(width: 10),
-
-                            Text(
-                              'Plan Your Journey',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        const Text(
-                          'Use your saved destinations to create a personalized travel plan with Saarthi.',
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        // ==================================================
-                        // STEP 12.2 - OPEN TRIP PLANNER
-                        // ==================================================
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const TripPlannerScreen(),
-                              ),
-                            );
-                          },
-
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF1565C0),
-                          ),
-
-                          child: const Text('Plan My Trip'),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-                ],
+            title: const Text(
+              'Saved Places',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
             ),
+
+            actions: [
+              if (places.isNotEmpty)
+                IconButton(
+                  onPressed: clearAll,
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 25,
+                  ),
+                  tooltip: 'Clear all',
+                ),
+            ],
+          ),
+
+          // ========================================================
+          // BODY
+          // ========================================================
+
+          body: places.isEmpty
+              ? _buildEmptyState()
+              : _buildSavedPlaces(places),
+        );
+      },
     );
   }
 
@@ -344,34 +145,43 @@ class _SavedScreenState extends State<SavedScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 28,
+          vertical: 30,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 100,
-              height: 100,
+            // ==================================================
+            // EMPTY HEART ICON
+            // ==================================================
 
+            Container(
+              width: 105,
+              height: 105,
               decoration: const BoxDecoration(
                 color: Color(0xFFE3F2FD),
                 shape: BoxShape.circle,
               ),
-
               child: const Icon(
                 Icons.favorite_border,
-                size: 50,
+                size: 55,
                 color: Color(0xFF1565C0),
               ),
             ),
 
             const SizedBox(height: 25),
 
+            // ==================================================
+            // TITLE
+            // ==================================================
+
             const Text(
               'No Saved Places',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 23,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF123B65),
               ),
@@ -379,38 +189,198 @@ class _SavedScreenState extends State<SavedScreen> {
 
             const SizedBox(height: 10),
 
+            // ==================================================
+            // DESCRIPTION
+            // ==================================================
+
             const Text(
-              'Explore destinations and save the places you would like to visit.',
+              'You haven\'t saved any destinations yet.\n'
+              'Explore destinations and save your favourites here.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 15,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF607D8B),
+              ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            // ==================================================
+            // EXPLORE DESTINATIONS BUTTON
+            // ==================================================
 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1565C0),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
+            SizedBox(
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  widget.onExploreDestinations?.call();
+                },
+
+                icon: const Icon(
+                  Icons.explore,
+                  size: 22,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+
+                label: const Text(
+                  'Explore Destinations',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1565C0),
+                  foregroundColor: Colors.white,
+                  elevation: 3,
+
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                  ),
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
               ),
-
-              icon: const Icon(Icons.explore),
-
-              label: const Text('Explore Destinations'),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // ==========================================================
+  // SAVED PLACES LIST
+  // ==========================================================
+
+  Widget _buildSavedPlaces(
+    List<Map<String, dynamic>> places,
+  ) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(18),
+
+      itemCount: places.length,
+
+      itemBuilder: (context, index) {
+        final place = places[index];
+
+        final String name =
+            place['name'] as String? ?? 'Unknown Place';
+
+        final String subtitle =
+            place['subtitle'] as String? ?? '';
+
+        final IconData icon =
+            place['icon'] as IconData? ?? Icons.location_on;
+
+        return Container(
+          margin: const EdgeInsets.only(
+            bottom: 14,
+          ),
+
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+
+            border: Border.all(
+              color: const Color(0xFFD7E1EA),
+            ),
+
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 9,
+            ),
+
+            // ==================================================
+            // PLACE ICON
+            // ==================================================
+
+            leading: Container(
+              width: 50,
+              height: 50,
+
+              decoration: BoxDecoration(
+                color: const Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.circular(13),
+              ),
+
+              child: Icon(
+                icon,
+                color: const Color(0xFF1565C0),
+                size: 25,
+              ),
+            ),
+
+            // ==================================================
+            // PLACE NAME
+            // ==================================================
+
+            title: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF123B65),
+              ),
+            ),
+
+            // ==================================================
+            // PLACE SUBTITLE
+            // ==================================================
+
+            subtitle: Padding(
+              padding: const EdgeInsets.only(
+                top: 4,
+              ),
+              child: Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+
+                style: const TextStyle(
+                  fontSize: 13,
+                  height: 1.3,
+                  color: Color(0xFF607D8B),
+                ),
+              ),
+            ),
+
+            // ==================================================
+            // REMOVE BUTTON
+            // ==================================================
+
+            trailing: IconButton(
+              onPressed: () {
+                removePlace(name);
+              },
+
+              icon: const Icon(
+                Icons.favorite,
+                color: Color(0xFFE53935),
+                size: 25,
+              ),
+
+              tooltip: 'Remove from saved',
+            ),
+          ),
+        );
+      },
     );
   }
 }

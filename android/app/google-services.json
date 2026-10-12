@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "585161888895",
+    "project_id": "saarthi-d0547",
+    "storage_bucket": "saarthi-d0547.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585161888895:android:b73a0278b2586668cb9b4a",
+        "android_client_info": {
+          "package_name": "com.example.newproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd_ShEP5FCWio7JsnLo9AjoyLvT7aXa-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
