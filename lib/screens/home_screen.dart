@@ -8,6 +8,14 @@ import 'trip_planner_screen.dart';
 
 import 'map_screen.dart';
 
+import 'accommodations_screen.dart';
+
+import 'travel_screen.dart';
+
+import 'food_screen.dart';
+import 'travel_insurance_screen.dart';
+import 'tourist_attractions_screen.dart';
+
 class HomePage extends StatefulWidget {
 
   const HomePage({super.key});
@@ -52,7 +60,7 @@ class _HomePageState extends State<HomePage> {
 
   static const Color lightBlue = Color(0xFFE3F2FD);
 
-  static const Color background = Color(0xFFF1F7FD);
+  static const Color background = Color(0xFFDCEBFA);
 
   // ==========================================================
 
@@ -107,43 +115,54 @@ class _HomePageState extends State<HomePage> {
   // ==========================================================
 
   final List<Map<String, String>> destinations = [
-
     {
-
       'name': 'Goa',
-
       'subtitle': 'Beaches & nightlife',
-
       'image':
-
-          'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=700&q=80',
-
+          'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=700&q=80',
     },
-
     {
-
       'name': 'Manali',
-
       'subtitle': 'Mountains & adventure',
-
       'image':
-
           'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=700&q=80',
-
     },
-
     {
-
       'name': 'Jaipur',
-
       'subtitle': 'Heritage & culture',
-
       'image':
-
           'https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=700&q=80',
-
     },
-
+    {
+      'name': 'Kerala',
+      'subtitle': 'Backwaters & nature',
+      'image':
+          'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=700&q=80',
+    },
+    {
+      'name': 'Mumbai',
+      'subtitle': 'City life & coastline',
+      'image':
+          'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=700&q=80',
+    },
+    {
+      'name': 'Delhi',
+      'subtitle': 'Monuments & food',
+      'image':
+          'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=700&q=80',
+    },
+    {
+      'name': 'Agra',
+      'subtitle': 'Iconic heritage',
+      'image':
+          'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=700&q=80',
+    },
+    {
+      'name': 'Udaipur',
+      'subtitle': 'Lakes & royal palaces',
+      'image':
+          'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=700&q=80',
+    },
   ];
 
   // ==========================================================
@@ -262,7 +281,7 @@ class _HomePageState extends State<HomePage> {
 
           decoration: const BoxDecoration(
 
-            color: Colors.white,
+            color: Color(0xFFEAF4FF),
 
             borderRadius: BorderRadius.vertical(
 
@@ -892,7 +911,7 @@ class _HomePageState extends State<HomePage> {
 
                 decoration: BoxDecoration(
 
-                  color: Colors.white,
+                  color: const Color(0xFFEAF4FF),
 
                   borderRadius:
 
@@ -1197,17 +1216,12 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Hotels & stays',
 
                   onTap: () {
-
-                    openFeature(
-
-                      'Accommodations',
-
-                      'Find hotels, resorts and comfortable stays.',
-
-                      Icons.hotel,
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccommodationsScreen(),
+                      ),
                     );
-
                   },
 
                 ),
@@ -1221,17 +1235,12 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Transport options',
 
                   onTap: () {
-
-                    openFeature(
-
-                      'Travel',
-
-                      'Explore transport and travel options.',
-
-                      Icons.directions_car,
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TravelScreen(),
+                      ),
                     );
-
                   },
 
                 ),
@@ -1257,17 +1266,12 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Local recommendations',
 
                   onTap: () {
-
-                    openFeature(
-
-                      'Food Recommendations',
-
-                      'Discover recommended local food and restaurants.',
-
-                      Icons.restaurant,
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FoodScreen(),
+                      ),
                     );
-
                   },
 
                 ),
@@ -1281,17 +1285,12 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Stay protected',
 
                   onTap: () {
-
-                    openFeature(
-
-                      'Travel Insurance',
-
-                      'Explore travel protection and insurance options.',
-
-                      Icons.shield,
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TravelInsuranceScreen(),
+                      ),
                     );
-
                   },
 
                 ),
@@ -1305,17 +1304,12 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Places to visit',
 
                   onTap: () {
-
-                    openFeature(
-
-                      'Tourist Attractions',
-
-                      'Discover popular attractions and hidden gems.',
-
-                      Icons.place,
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TouristAttractionsScreen(),
+                      ),
                     );
-
                   },
 
                 ),
@@ -2416,7 +2410,7 @@ class _HomePageState extends State<HomePage> {
 
     return Material(
 
-      color: Colors.white,
+      color: const Color(0xFFEAF4FF),
 
       elevation: 3,
 
@@ -2662,7 +2656,7 @@ class _HomePageState extends State<HomePage> {
 
     return Material(
 
-      color: Colors.white,
+      color: const Color(0xFFEAF4FF),
 
       borderRadius:
 
